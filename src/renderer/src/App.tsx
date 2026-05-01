@@ -377,13 +377,15 @@ export function App(): ReactElement {
         <div className="crop-stage" ref={stageRef}>
           {activeImage ? (
             <>
-              <img
-                ref={imageRef}
-                className="crop-stage__image"
-                src={activeImage.dataUrl}
-                alt={activeImage.name}
-                onLoad={handleImageLoad}
-              />
+              <div className="crop-stage__image-frame">
+                <img
+                  ref={imageRef}
+                  className="crop-stage__image"
+                  src={activeImage.dataUrl}
+                  alt={activeImage.name}
+                  onLoad={handleImageLoad}
+                />
+              </div>
               {cropStyle && activeAsset !== 'banner' ? (
                 <div
                   className="crop-box"
