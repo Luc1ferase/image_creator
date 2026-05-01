@@ -1,6 +1,6 @@
 {
   "name": "image-creator",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Batch image crop and export desktop tool.",
   "main": "dist/main/index.js",
