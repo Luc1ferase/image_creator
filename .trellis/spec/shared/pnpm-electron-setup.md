@@ -395,6 +395,81 @@ npm install --global windows-build-tools
 
 ## 最佳实践
 
+### 0. Windows 打包目标约定
+
+#### 1. Scope / Trigger
+
+当 Windows Electron 应用需要通过 CI 产出可运行包时，默认使用 electron-builder 的 `dir` 目标，生成 `release/win-unpacked/` 完整应用目录。
+
+不要默认使用 `portable` 目标。`portable` 会调用 NSIS `makensis.exe` 生成单文件启动器，在部分 Windows 杀软中容易触发高危误报并删除产物。
+
+#### 2. Signatures
+
+```json
+{
+  "scripts": {
+    "dist": "pnpm build && electron-builder --win dir --x64"
+  },
+  "build": {
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        {
+          "target": "dir",
+          "arch": ["x64"]
+        }
+      ]
+    }
+  }
+}
+```
+
+#### 3. Contracts
+
+| Contract | Required Value |
+| --- | --- |
+| Build command | `pnpm dist` |
+| Electron-builder target | `dir` |
+| Runnable executable | `release/win-unpacked/<Product Name>.exe` |
+| CI artifact path | `release/win-unpacked/**` |
+| Distribution unit | Entire `win-unpacked` folder, not the `.exe` alone |
+
+The executable inside `win-unpacked` depends on adjacent files such as `resources/`, DLLs, `.pak` files, and Electron runtime assets. Uploading only `<Product Name>.exe` creates a broken artifact.
+
+#### 4. Validation & Error Matrix
+
+| Case | Validation | Expected Result |
+| --- | --- | --- |
+| Base | Run `pnpm dist` | Command exits 0 and logs `appOutDir=release\\win-unpacked` |
+| Good | Check `release/win-unpacked/<Product Name>.exe` | File exists |
+| Bad | CI uploads `release/*.exe` | Artifact is missing or incomplete |
+| Bad | Package target is `portable` | Build invokes NSIS and may be deleted by antivirus |
+
+#### 5. CI Example
+
+```yaml
+- name: Build Windows app folder
+  run: pnpm dist
+
+- name: Verify runnable app exists
+  shell: pwsh
+  run: |
+    if (!(Test-Path "release/win-unpacked/Image Creator.exe")) {
+      throw "Expected release/win-unpacked/Image Creator.exe to exist"
+    }
+
+- name: Upload Windows app artifact
+  uses: actions/upload-artifact@v4
+  with:
+    name: image-creator-windows-x64-unpacked
+    path: |
+      release/win-unpacked/**
+    if-no-files-found: error
+```
+
 ### 1. 锁定 Electron 版本
 
 ```json

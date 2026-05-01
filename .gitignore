@@ -1,1 +1,10 @@
 .ace-tool/
+node_modules/
+.pnpm-store/
+dist/
+dist-test/
+out/
+release/
+coverage/
+.vite/
+*.log

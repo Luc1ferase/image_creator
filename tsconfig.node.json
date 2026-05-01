@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": ["node"]
+  },
+  "include": ["src/main/**/*.ts", "src/preload/**/*.ts", "src/shared/**/*.ts"],
+  "exclude": ["src/**/*.test.ts", "dist", "dist-test", "node_modules"]
+}

@@ -1,0 +1,6 @@
+{"file": ".claude/commands/trellis/finish-work.md", "reason": "Finish work checklist"}
+{"file": ".claude/commands/trellis/check.md", "reason": "Code quality check spec"}
+{"file": ".trellis/spec/frontend/ipc-electron.md", "reason": "Verify IPC file export bridge"}
+{"file": ".trellis/spec/shared/typescript.md", "reason": "Verify TypeScript rules"}
+{"file": ".trellis/spec/frontend/quality.md", "reason": "Verify frontend quality rules"}
+{"file": ".trellis/spec/frontend/electron-browser-api-restrictions.md", "reason": "Verify no unsupported Electron renderer APIs"}

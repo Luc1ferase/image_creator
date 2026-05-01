@@ -1,0 +1,9 @@
+{"file": ".trellis/workflow.md", "reason": "Project workflow and conventions"}
+{"file": ".trellis/spec/backend/index.md", "reason": "Backend development guide"}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend development guide"}
+{"file": ".trellis/spec/frontend/ipc-electron.md", "reason": "File import/export needs Electron IPC and preload bridge"}
+{"file": ".trellis/spec/frontend/electron-browser-api-restrictions.md", "reason": "Avoid unsupported renderer file-system and dialog APIs"}
+{"file": ".trellis/spec/frontend/css-design.md", "reason": "CSS organization and BEM styling"}
+{"file": ".trellis/spec/frontend/quality.md", "reason": "Frontend quality rules"}
+{"file": ".trellis/spec/frontend/react-pitfalls.md", "reason": "React state and dependency patterns for crop workflow"}
+{"file": ".trellis/spec/shared/typescript.md", "reason": "TypeScript standards"}
