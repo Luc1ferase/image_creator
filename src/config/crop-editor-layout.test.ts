@@ -34,8 +34,11 @@ describe('crop editor large image layout', () => {
   });
 
   it('keeps the img element box equal to the fitted bitmap for crop coordinate mapping', () => {
+    const appSource = readSource('src/renderer/src/App.tsx');
     const imageBlock = readCssBlock('.crop-stage__image');
 
+    assert.match(appSource, /fitSizeWithinBounds/);
+    assert.match(appSource, /style=\{imageStyle\}/);
     assert.match(imageBlock, /max-width:\s*100%/);
     assert.match(imageBlock, /max-height:\s*100%/);
     assert.match(imageBlock, /width:\s*auto/);

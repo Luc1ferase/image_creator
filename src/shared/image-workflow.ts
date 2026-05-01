@@ -108,3 +108,15 @@ export function clampCrop(crop: CropBox, imageSize: Size, minimumSize = 32): Cro
     height: Math.round(height),
   };
 }
+
+export function fitSizeWithinBounds(imageSize: Size, bounds: Size): Size {
+  if (imageSize.width <= 0 || imageSize.height <= 0 || bounds.width <= 0 || bounds.height <= 0) {
+    return { width: 0, height: 0 };
+  }
+
+  const scale = Math.min(bounds.width / imageSize.width, bounds.height / imageSize.height);
+  return {
+    width: imageSize.width * scale,
+    height: imageSize.height * scale,
+  };
+}

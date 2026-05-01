@@ -4,6 +4,7 @@ import {
   ASSET_SPECS,
   clampCrop,
   createDefaultCrop,
+  fitSizeWithinBounds,
   getNextPendingAsset,
   sanitizeFolderName,
 } from './image-workflow';
@@ -73,6 +74,32 @@ describe('image workflow helpers', () => {
     );
   });
 
+  it('fits source images proportionally inside the editor bounds', () => {
+    assertSizeClose(
+      fitSizeWithinBounds({ width: 8000, height: 5000 }, { width: 978, height: 689 }),
+      {
+        width: 978,
+        height: 611.25,
+      }
+    );
+
+    assertSizeClose(
+      fitSizeWithinBounds({ width: 5000, height: 8000 }, { width: 978, height: 689 }),
+      {
+        width: 430.625,
+        height: 689,
+      }
+    );
+
+    assertSizeClose(
+      fitSizeWithinBounds({ width: 2000, height: 12000 }, { width: 978, height: 689 }),
+      {
+        width: 114.83333333333333,
+        height: 689,
+      }
+    );
+  });
+
   it('returns the first pending asset after banner', () => {
     assert.equal(
       getNextPendingAsset({ banner: true, avatar: false, portrait: false, thumb: false }),
@@ -84,3 +111,11 @@ describe('image workflow helpers', () => {
     );
   });
 });
+
+function assertSizeClose(
+  actual: { width: number; height: number },
+  expected: { width: number; height: number }
+): void {
+  assert.ok(Math.abs(actual.width - expected.width) < 0.0001);
+  assert.ok(Math.abs(actual.height - expected.height) < 0.0001);
+}

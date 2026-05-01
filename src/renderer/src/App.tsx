@@ -5,6 +5,7 @@ import {
   clampCrop,
   createDefaultCompletion,
   createDefaultCrop,
+  fitSizeWithinBounds,
   getAssetSpec,
   getNextPendingAsset,
   sanitizeFolderName,
@@ -42,6 +43,7 @@ export function App(): ReactElement {
   const [activeImageId, setActiveImageId] = useState<string | null>(null);
   const [activeAsset, setActiveAsset] = useState<AssetName>('banner');
   const [imageSize, setImageSize] = useState<Size | null>(null);
+  const [displaySize, setDisplaySize] = useState<Size | null>(null);
   const [crop, setCrop] = useState<CropBox | null>(null);
   const [displayMetrics, setDisplayMetrics] = useState<DisplayMetrics | null>(null);
   const [statusText, setStatusText] = useState('拖入图片或点击上传开始处理');
@@ -59,20 +61,25 @@ export function App(): ReactElement {
 
   const updateDisplayMetrics = useCallback((nextImageSize: Size): void => {
     const stage = stageRef.current;
-    const image = imageRef.current;
-    if (!stage || !image) {
+    if (!stage) {
       setDisplayMetrics(null);
+      setDisplaySize(null);
       return;
     }
 
     const stageRect = stage.getBoundingClientRect();
-    const imageRect = image.getBoundingClientRect();
+    const bounds = {
+      width: Math.max(stageRect.width - 2, 0),
+      height: Math.max(stageRect.height - 2, 0),
+    };
+    const nextDisplaySize = fitSizeWithinBounds(nextImageSize, bounds);
     setDisplayMetrics({
-      offsetX: imageRect.left - stageRect.left,
-      offsetY: imageRect.top - stageRect.top,
-      scaleX: imageRect.width / nextImageSize.width,
-      scaleY: imageRect.height / nextImageSize.height,
+      offsetX: (stageRect.width - nextDisplaySize.width) / 2,
+      offsetY: (stageRect.height - nextDisplaySize.height) / 2,
+      scaleX: nextDisplaySize.width / nextImageSize.width,
+      scaleY: nextDisplaySize.height / nextImageSize.height,
     });
+    setDisplaySize(nextDisplaySize);
   }, []);
 
   const cropStyle = useMemo(() => {
@@ -88,8 +95,21 @@ export function App(): ReactElement {
     };
   }, [crop, displayMetrics]);
 
+  const imageStyle = useMemo(() => {
+    if (!displaySize) {
+      return undefined;
+    }
+
+    return {
+      width: displaySize.width,
+      height: displaySize.height,
+    };
+  }, [displaySize]);
+
   const resetForImage = useCallback((image: QueueImage | null): void => {
     setImageSize(null);
+    setDisplaySize(null);
+    setDisplayMetrics(null);
     setCrop(null);
     setActiveAsset(getNextPendingAsset(image?.completion ?? createDefaultCompletion()) ?? 'banner');
   }, []);
@@ -383,6 +403,7 @@ export function App(): ReactElement {
                   className="crop-stage__image"
                   src={activeImage.dataUrl}
                   alt={activeImage.name}
+                  style={imageStyle}
                   onLoad={handleImageLoad}
                 />
               </div>

@@ -390,4 +390,28 @@ h4 {
 
 ---
 
+## Lessons Learned
+
+### Image Fit in Measurement-Based Editors
+
+When a UI maps pointer coordinates back to source image pixels, do not rely only on an
+`<img>` element's `max-width: 100%` and `max-height: 100%` behavior. Chromium can resolve
+replaced image sizing in a way that fits one axis first, leaving portrait or very tall
+images taller than their viewport.
+
+Use a single explicit contain calculation for both:
+
+- the rendered image `width` and `height`
+- the crop/selection coordinate mapping back to source pixels
+
+Required regression coverage:
+
+- landscape image larger than the editor
+- portrait image larger than the editor
+- ultrawide image
+- ultratall image
+- packaged Electron app verification, not only browser/Vite tests
+
+---
+
 **Language**: All documentation must be written in **English**.
