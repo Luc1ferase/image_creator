@@ -12,5 +12,5 @@
     "outDir": "dist-test",
     "types": ["node"]
   },
-  "include": ["src/shared/**/*.ts"]
+  "include": ["src/**/*.test.ts"]
 }

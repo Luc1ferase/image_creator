@@ -333,6 +333,15 @@ export function App(): ReactElement {
   }, [activeImage?.id, resetForImage]);
 
   useEffect(() => {
+    const image = imageRef.current;
+    if (!activeImage || !image || !image.complete || image.naturalWidth === 0) {
+      return;
+    }
+
+    handleImageLoad();
+  }, [activeImage, handleImageLoad]);
+
+  useEffect(() => {
     if (!imageSize) {
       return undefined;
     }
@@ -357,7 +366,7 @@ export function App(): ReactElement {
             <button
               className="button"
               type="button"
-              disabled={!activeImage || isExporting}
+              disabled={!activeImage || !imageSize || !crop || isExporting}
               onClick={() => void exportCurrentAsset()}
             >
               选定

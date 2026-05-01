@@ -135,6 +135,34 @@ const { tree } = useItemTree({ workspaceId }); // ALSO needs subscription!
 
 This project uses `contextIsolation: true` for security. This means the renderer process is isolated from Node.js and Electron APIs.
 
+### Preload Sandbox and Shared Modules
+
+If the preload script imports project-local CommonJS modules, such as `../shared/ipc`, then the `BrowserWindow` must either:
+
+1. Disable preload sandboxing with `sandbox: false`, while keeping `contextIsolation: true` and `nodeIntegration: false`; or
+2. Bundle the preload script into a single file that contains those shared constants.
+
+Do not leave the default sandbox behavior unverified. In a packaged app, sandboxed preload scripts use Electron's limited preload `require`, which can fail with `module not found: ../shared/ipc`. The visible symptom is usually that `window.api` is `undefined`; the UI may render, but all IPC-backed actions fail.
+
+```typescript
+// src/main/index.ts
+const win = new BrowserWindow({
+  webPreferences: {
+    preload: path.join(__dirname, '../preload/index.js'),
+    contextIsolation: true,
+    nodeIntegration: false,
+    sandbox: false,
+  },
+});
+```
+
+Packaged runtime verification must check:
+
+- `typeof window.api === 'object'`
+- `typeof window.api.<domain> === 'object'`
+- no console error matching `Unable to load preload script`
+- no console error matching `module not found`
+
 ### What You CANNOT Do in Renderer
 
 ```tsx

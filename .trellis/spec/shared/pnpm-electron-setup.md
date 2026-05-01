@@ -470,6 +470,50 @@ The executable inside `win-unpacked` depends on adjacent files such as `resource
     if-no-files-found: error
 ```
 
+### 0.1 Packaged Renderer Asset Paths
+
+#### 1. Scope / Trigger
+
+When an Electron renderer is loaded with `BrowserWindow.loadFile(...)`, Vite must emit relative asset URLs. The packaged URL is `file://.../dist/renderer/index.html`; absolute URLs such as `/assets/index.js` resolve from the filesystem root and can leave the packaged app blank.
+
+#### 2. Signature
+
+```javascript
+// vite.config.mjs
+export default defineConfig({
+  root: '.',
+  base: './',
+  build: {
+    outDir: 'dist/renderer',
+  },
+});
+```
+
+#### 3. Contracts
+
+| Contract | Required Value |
+| --- | --- |
+| Vite `base` | `'./'` |
+| Packaged HTML script URL | `./assets/<file>.js` |
+| Packaged HTML stylesheet URL | `./assets/<file>.css` |
+| Regression test | Assert `vite.config.mjs` contains `base: './'` |
+
+#### 4. Validation & Error Matrix
+
+| Case | Validation | Expected Result |
+| --- | --- | --- |
+| Good | Inspect `dist/renderer/index.html` after `pnpm build` | Asset URLs start with `./assets/` |
+| Bad | Vite `base` omitted | Asset URLs start with `/assets/`; packaged app may render a blank window |
+| Bad | Only dev server tested | `http://localhost` works but packaged `file://` build can fail |
+
+#### 5. Packaged Runtime Verification
+
+Use a packaged executable with DevTools protocol to verify:
+
+- `document.getElementById('root').children.length > 0`
+- `document.body.innerText` contains the primary app UI
+- No `Network.loadingFailed` events for renderer assets
+
 ### 1. 锁定 Electron 版本
 
 ```json

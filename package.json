@@ -11,7 +11,7 @@
     "build": "pnpm typecheck && pnpm test && pnpm build:main && vite build",
     "dist": "pnpm build && electron-builder --win dir --x64",
     "preview": "vite preview",
-    "test": "tsc -p tsconfig.test.json && node dist-test/shared/image-workflow.test.js",
+    "test": "tsc -p tsconfig.test.json && node --test \"dist-test/**/*.test.js\"",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.node.json --noEmit"
   },
   "build": {
